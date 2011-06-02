@@ -17,7 +17,7 @@ The code is in the public domain.
 
 1. Download the files or clone the repository to your local box.
 2. Install python-markdown2, jinja2, and PyRSS2Gen following the instructions on their sites.
-3. To install smartypants.py, put `smartypants.py` in `/usr/lib/python2.6` (though yours may be in `/usr/local/lib` instead and the Python version number may be different).
+3. To install smartypants.py, put `smartypants.py` somewhere in your `PYTHONPATH` (on my Mac, it's `/usr/lib/python2.6`)
 4. Put the Ink directory in your `$PATH`.
 5. Copy `inkconfig.sample.py` to `inkconfig.py`.
 
