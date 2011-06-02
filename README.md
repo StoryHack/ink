@@ -124,7 +124,7 @@ The parameters in the image line can be in any order as long as the image filena
 
 ### Adding pages
 
-To add a page, create it in the `pages/` directory (and you can have subdirectories here as well) using the following format:
+To add a page, create it in the `pages/` directory (and you can have subdirectories here as well) using the `slug.text` filename pattern and the following format for the contents:
 
 	title: About
 	----
@@ -138,9 +138,12 @@ So, YAML metadata at the top (title is required), followed by a line with four h
 
 Type `ink bake about.text` or just `ink bake about` (it'll look in the current directory for a filename matching that string) and Ink will bake the page into the appropriate location in the `web/` directory.
 
-If you want to use a different template for a page (or a post), just put the following line in your page file and a corresponding template in your `templates/` directory:
+If you want to use a different template for a page (or a post), put the following line under `title` in your page file and put a corresponding template in your `templates/` directory:
 
+	title: About
 	template: book
+	----
+	etc.
 
 (Which would load the template `book.html`.)
 
@@ -154,9 +157,11 @@ If you want to see what'll be deployed before you actually deploy, type `ink sta
 
 ### Editing/baking existing posts/pages
 
-To edit posts, go to the `posts/` directory and find the post you want to edit. You can open the file with any editor, but if you want to make things a little easier, you can type `ink edit jabberwocky` and it'll open the file in the current directory that matches the string, in whatever editor you've set in `inkconfig.py`.
+To edit posts, go to the `posts/` directory and find the post you want to edit. You can open the file with any editor, but if you want to make things a little easier, you can type something like `ink edit jabberwocky`, which will look in the current directory for a filename matching the string `jabberwocky` and then open it in whatever editor you've set in `inkconfig.py`.
 
-After you've edited the page or the post, just type `ink bake [filename]` (or part of the filename) and Ink will bake the HTML to the appropriate location.
+To edit pages, go to the `pages/` directory and edit the file. The `ink edit [partial-filename]` trick works here, too. (It works anywhere, actually.)
+
+After you've edited the page or the post, going along with our previous Jabberwocky post example, just type `ink bake jabberwocky` (or part of the filename, just like with `ink edit`) and Ink will bake the HTML to the appropriate location.
 
 
 ### Moderating comments
