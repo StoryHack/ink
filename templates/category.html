@@ -1,0 +1,30 @@
+{% include 'header.html' %}
+
+<section id="content">
+	<aside id="sidebar" class="archive">
+		<h3>{{ title }}</h3>
+
+		<p>Page {{ cur_page }} of {{ num_pages }} ({{ num_posts}} posts total)</p>
+
+		{% if nav %}
+		<div class="navigation">
+			{{ nav }}
+		</div>
+		{% endif %}
+	</aside>
+
+	<div id="main">
+		{% for post in posts %}
+		<article class="entry">
+			<header>
+				<h1 class="title"><a href="{{ post.url }}">{{ post.title }}</a></h1>
+				<h2><time>{{ post.date }}</time>{% if post.categoryhtml %} &bull; {{ post.categoryhtml }}{% endif %}</h2>
+			</header>
+
+			<div class="post">{{ post.content }}</div>
+		</article>
+		{% endfor %}
+	</div>
+</section>
+
+{% include 'footer.html' %}

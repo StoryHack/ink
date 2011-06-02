@@ -1,0 +1,19 @@
+{% include 'header.html' %}
+
+<section id="content">
+	<div id="main">
+		<article class="entry">
+			<header>
+				<h1 class="title">{{ title }}</h1>
+			</header>
+
+			<div class="page">{{ content }}</div>
+		</article>
+	</div>
+
+	<aside id="sidebar">
+		<p>Page last modified {{ date }}</p>
+	</aside>
+</section>
+
+{% include 'footer.html' %}

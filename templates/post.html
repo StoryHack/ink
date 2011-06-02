@@ -1,0 +1,66 @@
+{% include 'header.html' %}
+
+<section id="content">
+	<div id="main">
+		<article class="entry">
+			<header>
+				<h1 class="title">{{ title }}</h1>
+				<h2 id="postmeta"><time>{{ date }}</time>{% if categories %} &bull; {{ categories }}{% endif %}</h2>
+			</header>
+
+			<div class="post">{{ content }}</div>
+		</article>
+
+		<article id="comments">
+		{% if comments %}
+			<h3 class="commentheader">Comments</h3>
+
+			{% for comment in comments %}
+			<div class="comment_div" id="comment-{{ loop.index }}">
+				<div class="commentmeta{% if comment.authcomment %} authcomment{% endif %}"><span class="commenter">{{ comment.author_display }}</span> on {{ comment.date }}</div>
+				{{ comment.content }}
+			</div>
+			{% endfor %}
+		{% endif %}
+			<h3 class="commentheader">Add your two cents</h3>
+
+			<form method="post" id="commentform">
+				<div class="commentform">
+					<div>
+						<label for="author">Name:</label>
+						<input type="text" name="author" id="author" value="" size="22" tabindex="1" />
+					</div>
+
+					<div>
+						<label for="email">Email:</label>
+						<input type="text" name="email" id="email" value="" size="22" tabindex="2" />
+					</div>
+
+					<div>
+						<label for="url">URL:</label>
+						<input type="text" name="url" id="url" value="" size="22" tabindex="3" />
+					</div>
+
+					<textarea name="comment" id="comment" cols="100%" rows="5" tabindex="4"></textarea>
+					<input name="submit" type="submit" id="submit" tabindex="5" value="Submit" />
+					<span id="spinner"><img src="/images/snake.gif" /></span>
+					<input type="hidden" id="post_slug" name="post_slug" value="{{ post_slug }}" />
+				</div>
+			
+				<input class="invisible" type="text" id="nonce" name="nonce" autocomplete="off" value="31415926" />
+				<input class="invisible" type="text" id="humpty" name="humpty" autocomplete="off" value="" />
+			</form>
+
+			<div id="comment_submitted">Your comment was submitted and will show up as soon as I approve it. Thanks.</div>
+
+			<div id="comment_error">Something went wrong with submitting your comment. Try again, and if it still doesn't work, email me. Sorry!</div>
+		</article>
+	</div>
+
+	<aside id="sidebar" class="postmeta">
+		<time>{{ date }}</time>
+		{% if categories %}<p>Posted in: {{ categories }}</p>{% endif %}
+	</aside>
+</section>
+
+{% include 'footer.html' %}

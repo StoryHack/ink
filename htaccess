@@ -1,0 +1,26 @@
+Options FollowSymLinks -MultiViews
+AllowOverride All
+Order allow,deny
+Allow from all
+
+RewriteEngine On
+
+# Feed
+RewriteRule ^feed/?$    /feed.xml           [L]
+
+# Ignoring existing directories, redirect things to the HTML equivalent
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+[^/])/$ $1.html [L]
+
+# Blog posts
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule blog/(.*)?$ blog/$1.html
+
+# Pages
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule (.*)?/?$ $1.html
+
+# Error documents
+ErrorDocument 404 /404.html
+ErrorDocument 403 /403.html
+ErrorDocument 500 /500.html

@@ -1,0 +1,25 @@
+{% include 'header.html' %}
+
+<section id="content">
+	<header>
+		<h1>Archives</h1>
+	</header>
+
+	<h3>Blog Archives</h3>
+
+	<h4>By Date</h4>
+	<ul class="archives">
+	{% for month in archives %}
+	<li><a href='{{ month.url }}' title='{{ month.name }}'>{{ month.name }}</a>&nbsp;({{ month.count }})</li>
+	{% endfor %}
+	</ul>
+
+	<h4>By Category</h4>
+	<ul class="archives">
+	{% for category in categories %}
+	<li><a href='{{ category.url }}' title='{{ category.name }}'>{{ category.name }}</a>&nbsp;({{ category.count }})</li>
+	{% endfor %}
+	</ul>
+</section>
+
+{% include 'footer.html' %}
