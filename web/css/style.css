@@ -1,7 +1,15 @@
-body							{ margin: 0; padding: 50px 0; font-family: Georgia, serif; background: #fff; line-height: 1.45em; font-size: 100%; border-top: solid 10px #a3b687; color: #222; }
+body							{ margin: 0; padding: 50px 0; font-family: Georgia, serif; background: #fff; line-height: 1.45em; font-size: 100%; color: #222; }
 
 
 /* HTML 5 elements (for Firefox 3.6) */
 /* -------------------------------------------------- */
 
 article, aside, figure, footer, header, hgroup, menu, nav, section { display: block; }
+
+body > header					{ width: 80%; max-width: 850px; margin: 0px auto; }
+
+section#content					{ width: 80%; max-width: 850px; margin: 0px auto; clear: both; overflow: hidden; padding-top: 3em; }
+
+#spinner						{ display: none; }
+
+.invisible						{ text-indent: -1000em; display: none; }
