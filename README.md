@@ -158,6 +158,8 @@ Type `ink deploy`. Ink will copy everything via rsync to your destination. (By d
 
 If you want to see what'll be deployed before you actually deploy, type `ink status`.
 
+Also, Ink syncs the destination directory to exactly match your local directory. If you want any files on the destination, they need to be in your local `web/` directory. (Files that are on the destination but not in the local directory get deleted.)
+
 
 ### Editing/baking existing posts/pages
 
