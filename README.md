@@ -104,7 +104,7 @@ First off, the filename for each post should look like this: `slug-for-post.text
 
 	Lorem ipsum etc.
 
-So, title goes on the first line, followed by a pipe and then a comma-separated list of categories. After a blank line, the body of the post is normal Markdown, with one exception: to have Ink upload images, use the double parentheses syntax. (You can also use normal HTML/Markdown image tags to reference images elsewhere on the web, of course.)
+So, title goes on the first line, followed by a pipe and then a comma-separated list of categories. After a blank line, the body of the post is normal Markdown, with one exception: to have Ink upload images, use the double parentheses syntax explained below. (You can also use normal HTML/Markdown image tags to reference images elsewhere on the web, of course.)
 
 Once you've got your post written, type `ink post jabberwocky.text`.
 
@@ -114,15 +114,12 @@ Note: I recommend using relative links in your posts when linking to other conte
 
 #### Image syntax
 
-The parameters in the image line can be in any order as long as the image filename comes first.
+The parameters in the image line can be in any order as long as the image filename comes first. Separate parameters with pipes.
 
-If you put a number in (the `150` in the example), that'll be the target width for the image. You can use this to scale images down.
-
-If you put `url=http://any/url/here`, the image will be linked to the specified URL.
-
-If you put `alt=My alternate text`, the image's alt text will be set to whatever you put.
-
-And anything else (such as `floatright`) will be added as a CSS class on the image.
+* Numbers (the `150` in the example) are interpreted as being the target width for the image. You can use this to scale images down.
+* To link the image to a URL, use `url=http://any/url/here`.
+* To add alternate text, use `alt=My alternate text`.
+* Anything else (such as `floatright`) will be added as a CSS class on the image.
 
 
 ### Adding pages
