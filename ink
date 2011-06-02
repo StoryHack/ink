@@ -66,7 +66,7 @@ class Post:
 		# prep
 		frontmatter = lines[0].strip().split(' | ')
 		self.title = frontmatter[0].strip()
-		if frontmatter[1]:
+		if len(frontmatter) > 1:
 			self.categories = frontmatter[1].split(', ')
 		else:
 			self.categories = []
@@ -615,6 +615,12 @@ class Site:
 						self.bake_monthly_archive(year, month)
 
 	def bake_archives(self):
+		# make sure the archives and category directories exist
+		if not os.path.exists('%s/web/archives' % inkconfig["syspath"]):
+			mkdir_p('%s/web/archives' % inkconfig["syspath"])
+		if not os.path.exists('%s/posts/category' % inkconfig["syspath"]):
+			mkdir_p('%s/posts/category' % inkconfig["syspath"])
+
 		archives = []
 		categories = []
 
@@ -662,10 +668,6 @@ class Site:
 		env = Environment(loader=FileSystemLoader('%s/templates' % inkconfig["syspath"]))
 		template = env.get_template('archives.html')
 		bakedhtml = template.render(archives=archives, categories=categories, title='Archives')
-
-		# make sure the archives directory exists
-		if not os.path.exists('%s/web/archives' % inkconfig["syspath"]):
-			mkdir_p('%s/web/archives' % inkconfig["syspath"])
 
 		# save HTML file to proper location
 		dest_file = '%s/web/archives/index.html' % inkconfig["syspath"]
