@@ -157,10 +157,8 @@ class Post:
 		lines = input.readlines()
 		input.close()
 
-		if len(lines) > 0:
+		if len(lines) > inkconfig["postsperpage"]:			# If there are too many posts on the home page, take the oldest one off
 			lines.pop()
-		else:
-			lines = []
 		lines.insert(0, '%s\n' % new_filename)
 
 		output = open(index_list, 'w')
