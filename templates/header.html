@@ -4,7 +4,7 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
 
-	<title>{% if title != 'Home' %}{{ title }} | {% endif %}Your Site Name</title>
+	<title>{% if title != 'Home' %}{{ title }} | {% endif %}{{ site_title }}</title>
 
 	<link rel="stylesheet" href="/css/style.css" media="screen" type="text/css" />
 	<link rel="stylesheet" href="/css/mobile.css" media="only screen and (max-width: 800px)" type="text/css" />
@@ -14,11 +14,12 @@
 	<![endif]-->
 
 	<script src="/js/jquery.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/js/site.js" type="text/javascript" charset="utf-8"></script>
 
 	<link rel="alternate" type="application/rss+xml" title="RSS" href="/feed" />
 </head>
 <body>
 	<header>
-		<h1>Your Site Banner</h1>
+		<h1>{{ site_title</h1>
 	</header>
 

@@ -11,15 +11,17 @@ The code is in the public domain.
 * [smartypants.py](http://web.chad.org/projects/smartypants.py/) for typographer's quotes
 * [jinja2](http://jinja.pocoo.org/) for templating
 * [PyRSS2Gen](http://www.dalkescientific.com/Python/PyRSS2Gen.html) for RSS feed generation
+* [jQuery](http://www.jquery.com/)
 
 
 ## Installation
 
 1. Download the files or clone the repository to your local box.
-2. Install python-markdown2, jinja2, and PyRSS2Gen following the instructions on their sites.
-3. To install smartypants.py, put `smartypants.py` somewhere in your `PYTHONPATH` (on my Mac, it's `/usr/lib/python2.6`)
-4. Put the Ink directory in your `$PATH`.
-5. Copy `inkconfig.sample.py` to `inkconfig.py`.
+2. Download the latest version of jQuery and put it in `web/js/jquery.js`
+3. Install python-markdown2, jinja2, and PyRSS2Gen following the instructions on their sites.
+4. To install smartypants.py, put `smartypants.py` somewhere in your `PYTHONPATH` (on my Mac, it's `/usr/lib/python2.6`)
+5. Put the Ink directory in your `$PATH`.
+6. Copy `inkconfig.sample.py` to `inkconfig.py`.
 
 
 ## Configuration

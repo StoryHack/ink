@@ -271,7 +271,7 @@ class Post:
 		# apply template
 		env = Environment(loader=FileSystemLoader('%s/templates' % inkconfig["syspath"]))
 		template = env.get_template('%s.html' % self.template)
-		bakedhtml = template.render(title=self.title, date=self.date, categories=self.categoryhtml, comments=self.comments, content=self.content, post_slug=post_slug)
+		bakedhtml = template.render(title=self.title, date=self.date, categories=self.categoryhtml, comments=self.comments, content=self.content, post_slug=post_slug, site_title=inkconfig["site_title"])
 
 		# save HTML file to proper location
 		output = open(dest_file, 'w')
@@ -340,7 +340,7 @@ class Page:
 		# apply template
 		env = Environment(loader=FileSystemLoader('%s/templates' % inkconfig["syspath"]))
 		template = env.get_template('%s.html' % self.template)
-		bakedhtml = template.render(title=self.title, date=self.date, content=self.content, thumbnail=self.thumbnail, metadata=metadata)
+		bakedhtml = template.render(title=self.title, date=self.date, content=self.content, thumbnail=self.thumbnail, metadata=metadata, site_title=inkconfig["site_title"])
 
 		# prep the directory
 		if self.relpath != '':
@@ -667,7 +667,7 @@ class Site:
 		# apply template
 		env = Environment(loader=FileSystemLoader('%s/templates' % inkconfig["syspath"]))
 		template = env.get_template('archives.html')
-		bakedhtml = template.render(archives=archives, categories=categories, title='Archives')
+		bakedhtml = template.render(archives=archives, categories=categories, title='Archives', site_title=inkconfig["site_title"])
 
 		# save HTML file to proper location
 		dest_file = '%s/web/archives/index.html' % inkconfig["syspath"]
@@ -946,7 +946,7 @@ def bake_page_list(lines, template_name, page_title, dest, cur_page, num_pages, 
 	# apply template
 	env = Environment(loader=FileSystemLoader('%s/templates' % inkconfig["syspath"]))
 	template = env.get_template('%s.html' % template_name)
-	bakedhtml = template.render(posts=posts, title=page_title, cur_page=cur_page, num_pages=num_pages, num_posts=num_posts, nav=nav)
+	bakedhtml = template.render(posts=posts, title=page_title, cur_page=cur_page, num_pages=num_pages, num_posts=num_posts, nav=nav, site_title=inkconfig["site_title"])
 
 	# save HTML file to proper location
 	dest_file = '%s/web/%s' % (inkconfig["syspath"], dest)
