@@ -156,8 +156,9 @@ class Post:
 		input = open(index_list, 'r')
 		lines = input.readlines()
 		input.close()
-	
-		lines.pop()
+
+		if len(lines) > 0:
+			lines.pop()
 		lines.insert(0, '%s\n' % new_filename)
 
 		output = open(index_list, 'w')
@@ -662,6 +663,10 @@ class Site:
 		template = env.get_template('archives.html')
 		bakedhtml = template.render(archives=archives, categories=categories, title='Archives')
 
+		# make sure the archives directory exists
+		if not os.path.exists('%s/web/archives' % inkconfig["syspath"]):
+			mkdir_p('%s/web/archives' % inkconfig["syspath"])
+
 		# save HTML file to proper location
 		dest_file = '%s/web/archives/index.html' % inkconfig["syspath"]
 		output = open(dest_file, 'w')
@@ -672,6 +677,9 @@ class Site:
 	def add_to_category(self, category, filename):
 		slug = get_category_slug(category)
 		catfile = '%s/posts/category/%s.list' % (inkconfig["syspath"], slug)
+
+		if not os.path.exists('%s/posts/category' % inkconfig["syspath"]):
+			mkdir_p('%s/posts/category' % inkconfig["syspath"])
 
 		if os.path.exists(catfile):
 			output = open(catfile, 'a')
