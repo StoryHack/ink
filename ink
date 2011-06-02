@@ -159,6 +159,8 @@ class Post:
 
 		if len(lines) > 0:
 			lines.pop()
+		else:
+			lines = []
 		lines.insert(0, '%s\n' % new_filename)
 
 		output = open(index_list, 'w')
