@@ -1,16 +1,16 @@
-## Ink
+# Ink
 
 Ink is a static blog engine and CMS written in Python, using Markdown/YAML for pages and posts and jinja2 for templates. Everything's run on the command line. You bake everything locally and then deploy to production (using rsync on the backend).
 
 
-### Dependencies
+## Dependencies
 
 * [python-markdown2](http://github.com/trentm/python-markdown2) for Markdown
 * [smartypants.py](http://web.chad.org/projects/smartypants.py/) for typographer's quotes
 * [jinja2](http://jinja.pocoo.org/) for templating
 
 
-### Installation
+## Installation
 
 1. Download the files or clone the repository to your local box
 2. Install python-markdown2, smartypants.py, and jinja2.
@@ -18,9 +18,9 @@ Ink is a static blog engine and CMS written in Python, using Markdown/YAML for p
 4. Copy `inkconfig.sample.py` to `inkconfig.py`
 
 
-### Configuration
+## Configuration
 
-#### inkconfig.py
+### inkconfig.py
 
 Customize `inkconfig.py` for your site, using the following guide:
 
@@ -34,19 +34,19 @@ Customize `inkconfig.py` for your site, using the following guide:
 * `postperpage`: used on the home page and the archive/category pages
 
 
-#### web/post_comments.php
+### web/post_comments.php
 
 Edit the `$EMAIL` part of `web/post_comments.php` (at the top of the file) for where you want comments to be sent.
 
 
-#### Apache
+### Apache
 
 Put the rules in the `htaccess` file either into a `.htaccess` file or your Apache config file for the site.
 
 Also, you want the DocumentRoot on your site to be the `web/` directory, not the Ink root. (If you did want it to be the Ink root, you'd have to add some rewrite rules to get everything to work.)
 
 
-#### Templates
+### Templates
 
 Edit the files in the `templates/` directory to your liking. Here's how each is used:
 
@@ -64,9 +64,9 @@ And you can read the [Jinja2 documentation](http://jinja.pocoo.org/docs/) to lea
 Also edit `web/css/style.css`, of course.
 
 
-### Usage
+## Usage
 
-#### Posting
+### Posting
 
 First off, the filename for each post should look like this: `slug-for-post.text` (obviously changing the slug to whatever you want the slug to be). The contents look like this:
 
@@ -93,7 +93,7 @@ Ink will copy your post to the appropriate location (something like `posts/2011/
 
 Note: I recommend using relative links in your posts when linking to other content on your site. If you do, Ink will bake them into absolute links when generating the RSS feed.
 
-##### Image syntax
+#### Image syntax
 
 The parameters in the image line can be in any order as long as the image filename comes first.
 
@@ -106,7 +106,7 @@ If you put `alt=My alternate text`, the image's alt text will be set to whatever
 And anything else (such as `floatright`) will be added as a CSS class on the image.
 
 
-#### Adding pages
+### Adding pages
 
 To add a page, create it in the `pages/` directory (and you can have subdirectories here as well) using the following format:
 
@@ -129,35 +129,35 @@ If you want to use a different template for a page (or a post), just put the fol
 (Which would load the template `book.html`.)
 
 
-#### Deploying
+### Deploying
 
 Type `ink deploy`. Ink will copy everything via rsync to your destination. (By default Ink copies everything over, including your `pages/` and `posts/` directories, so you have an automatic backup.)
 
 If you want to see what'll be deployed before you actually deploy, type `ink status`.
 
 
-#### Editing/baking existing posts/pages
+### Editing/baking existing posts/pages
 
 To edit posts, go to the `posts/` directory and find the post you want to edit. You can open the file with any editor, but if you want to make things a little easier, you can type `ink edit jabberwocky` and it'll open the file in the current directory that matches the string, in whatever editor you've set in `inkconfig.py`.
 
 After you've edited the page or the post, just type `ink bake [filename]` (or part of the filename) and Ink will bake the HTML to the appropriate location.
 
 
-#### Moderating comments
+### Moderating comments
 
 When someone leaves a comment, Ink emails it to you as an attachment. Save the attachment somewhere and, in the directory where you've saved it, type `ink approve comment.text`. It'll add the comment to that post and then bake the post.
 
 
-#### Baking
+### Baking
 
 You can use the following commands to bake the site
 
-`ink bake all` -- everything
-`ink bake posts` -- all the posts
-`ink bake pages` -- everything in the `pages/` directory
-`ink bake categories` -- the category pages
-`ink bake monthly` -- the monthly archives pages
-`ink bake archives` -- the archives page
-`ink bake index` -- the home page
-`ink bake rss` -- the RSS feed
-`ink bake sitemap` -- the sitemap.xml file
+* `ink bake all` -- everything
+* `ink bake posts` -- all the posts
+* `ink bake pages` -- everything in the `pages/` directory
+* `ink bake categories` -- the category pages
+* `ink bake monthly` -- the monthly archives pages
+* `ink bake archives` -- the archives page
+* `ink bake index` -- the home page
+* `ink bake rss` -- the RSS feed
+* `ink bake sitemap` -- the sitemap.xml file
