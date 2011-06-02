@@ -150,7 +150,7 @@ When someone leaves a comment, Ink emails it to you as an attachment. Save the a
 
 ### Baking
 
-You can use the following commands to bake the site
+You can use the following commands to bake various parts of the site:
 
 * `ink bake all` -- everything
 * `ink bake posts` -- all the posts
