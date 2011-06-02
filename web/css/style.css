@@ -13,3 +13,10 @@ section#content					{ width: 80%; max-width: 850px; margin: 0px auto; clear: bot
 #spinner						{ display: none; }
 
 .invisible						{ text-indent: -1000em; display: none; }
+
+#comment_submitted, #comment_error { margin: 3em 0 1em; padding: 7px 10px; font-style: italic; font-size: 12px; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; line-height: 1.4em; display: none; }
+
+#comment_submitted              { background: #c9d8b7; color: #3d5026; }
+#comment_error                  { background: #cfa69f; color: #902323; }
+
+footer							{ width: 80%; max-width: 850px; margin: 0px auto; font-size: .7em; padding-bottom: 50px; }
