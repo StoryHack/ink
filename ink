@@ -226,7 +226,7 @@ class Post:
 		self.content = frontmatter[1]
 
 		# parse metadata
-		self.title = metadata['title']
+		self.title = metadata['title'].decode('utf-8')
 		self.date = metadata['date']
 
 		if metadata.has_key('template'):
@@ -248,6 +248,7 @@ class Post:
 	
 		# convert from Markdown
 		self.content = smartyPants(markdown(self.content))
+
 
 	# bake post to HTML
 	def bake(self, echo=False):
