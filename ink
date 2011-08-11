@@ -226,7 +226,7 @@ class Post:
 		self.content = frontmatter[1]
 
 		# parse metadata
-		self.title = metadata['title'].decode('utf-8')
+		self.title = metadata['title']
 		self.date = metadata['date']
 
 		if metadata.has_key('template'):

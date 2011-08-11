@@ -58,9 +58,9 @@ Here's kind of what it should look like (in your Apache config file):
 	<VirtualHost YOUR.IP.ADDRESS:80>
 		ServerAdmin youremail@gmail.com
 		ServerName yourdomain.com
-		DocumentRoot /path/to/ink/in/filesystem
+		DocumentRoot /path/to/ink/in/filesystem/web
 	
-		<Directory "/path/to/ink/in/filesystem">
+		<Directory "/path/to/ink/in/filesystem/web">
 			# The contents of the htaccess file go here
 
 			Options FollowSymLinks -MultiViews
