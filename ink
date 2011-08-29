@@ -246,6 +246,9 @@ class Post:
 			categories.append("<a href='%s'>%s</a>" % (url, category))
 		self.categoryhtml = ", ".join(categories)
 	
+		# and the description field
+		self.desc = get_description(self.content).decode('utf-8')
+
 		# convert from Markdown
 		self.content = smartyPants(markdown(self.content))
 
@@ -272,7 +275,7 @@ class Post:
 		# apply template
 		env = Environment(loader=FileSystemLoader('%s/templates' % inkconfig["syspath"]))
 		template = env.get_template('%s.html' % self.template)
-		bakedhtml = template.render(title=self.title, date=self.date, categories=self.categoryhtml, comments=self.comments, content=self.content, post_slug=post_slug, site_title=inkconfig["site_title"])
+		bakedhtml = template.render(title=self.title, date=self.date, desc=self.desc, categories=self.categoryhtml, comments=self.comments, content=self.content, post_slug=post_slug, site_title=inkconfig["site_title"])
 
 		# save HTML file to proper location
 		output = open(dest_file, 'w')
@@ -335,13 +338,16 @@ class Page:
 		else:
 			self.thumbnail = ''
 
+		# and the description field
+		self.desc = get_description(self.content).decode('utf-8')
+
 		# Markdown and curly quotes
 		self.content = smartyPants(markdown(self.content))
 
 		# apply template
 		env = Environment(loader=FileSystemLoader('%s/templates' % inkconfig["syspath"]))
 		template = env.get_template('%s.html' % self.template)
-		bakedhtml = template.render(title=self.title, date=self.date, content=self.content, thumbnail=self.thumbnail, metadata=metadata, site_title=inkconfig["site_title"])
+		bakedhtml = template.render(title=self.title, date=self.date, desc=self.desc, content=self.content, thumbnail=self.thumbnail, metadata=metadata, site_title=inkconfig["site_title"])
 
 		# prep the directory
 		if self.relpath != '':
@@ -886,6 +892,15 @@ def get_date_from_filename(filename):
 def get_iso8601_date():
 	utcnow = datetime.utcnow()
 	return '%s+00:00' % utcnow.replace(utcnow.year, utcnow.month, utcnow.day, utcnow.hour, utcnow.minute, utcnow.second, 0).isoformat()
+
+def get_description(content):
+	stripped = re.sub(r'#|_|<h[1-6]>|<\/h[1-6]>|<div.*?>|<\/div>|<a href=.*?<\/a>|\n>|\*|<i>|<\/i>|<b>|<\/b>|<img.*?>', '', content.strip())
+	stripped = re.sub(r'\t|    |  ', ' ', stripped)
+	stripped = re.sub(r'\n|    |  ', '<br>', stripped)
+	stripped = re.sub(r'\[(.*?)\]\(.*?\)', r'\1', stripped)
+	stripped = re.sub(r'"', r"'", stripped)
+	stripped = re.sub(r'<br>(<br>)+', r"<br>", stripped)
+	return '%s...' % stripped[0:250].strip()
 
 def bake_page_list(lines, template_name, page_title, dest, cur_page, num_pages, num_posts, nav=False):
 	# get posts and send to template
