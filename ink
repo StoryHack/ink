@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import sys							# for argv
 import os							# for directory creation
@@ -247,7 +248,7 @@ class Post:
 		self.categoryhtml = ", ".join(categories)
 	
 		# and the description field
-		self.desc = get_description(self.content).decode('utf-8')
+		self.desc = get_description(self.content)
 
 		# convert from Markdown
 		self.content = smartyPants(markdown(self.content))
@@ -339,7 +340,7 @@ class Page:
 			self.thumbnail = ''
 
 		# and the description field
-		self.desc = get_description(self.content).decode('utf-8')
+		self.desc = get_description(self.content)
 
 		# Markdown and curly quotes
 		self.content = smartyPants(markdown(self.content))
@@ -674,7 +675,7 @@ class Site:
 		# apply template
 		env = Environment(loader=FileSystemLoader('%s/templates' % inkconfig["syspath"]))
 		template = env.get_template('archives.html')
-		bakedhtml = template.render(archives=archives, categories=categories, title='Archives', site_title=inkconfig["site_title"])
+		bakedhtml = template.render(archives=archives, categories=categories, title='Archives', desc='Site archives', site_title=inkconfig["site_title"])
 
 		# save HTML file to proper location
 		dest_file = '%s/web/archives/index.html' % inkconfig["syspath"]
@@ -869,13 +870,23 @@ def update_sitemap(url):
 	lines = input.read()
 	input.close()
 
-	# find the url we want and replace the date with the new get_iso8601_date()
-	lines = re.sub(r'%s/ \| [^|]*' % url, r'%s/ | %s ' % (url, get_iso8601_date()), lines)
+	url = re.sub(r'/index', r'', url)
 
-	# save the file
-	output = open('%s/pages/sitemap.list' % inkconfig["syspath"], 'w')
-	output.write(lines)
-	output.close()
+	if re.match(r'^%s/ |' % url, lines):
+		# find the url we want and replace the date with the new get_iso8601_date()
+		lines = re.sub(r'%s/ \| [^|]*' % url, r'%s/ | %s ' % (url, get_iso8601_date()), lines)
+
+		# save the file
+		output = open('%s/pages/sitemap.list' % inkconfig["syspath"], 'w')
+		output.write(lines)
+		output.close()
+	else:
+		# add it to the sitemap
+		if re.match(r'^blog/', url):
+			itemtype = 'post'
+		else:
+			itemtype = 'page'
+		add_to_sitemap(url, itemtype)
 
 def get_category_slug(category):
 	return category.lower().replace(".", "").replace("&amp;", "").replace(" ", "-")
@@ -894,11 +905,11 @@ def get_iso8601_date():
 	return '%s+00:00' % utcnow.replace(utcnow.year, utcnow.month, utcnow.day, utcnow.hour, utcnow.minute, utcnow.second, 0).isoformat()
 
 def get_description(content):
-	stripped = re.sub(r'#|_|<h[1-6]>|<\/h[1-6]>|<div.*?>|<\/div>|<a href=.*?<\/a>|\n>|\*|<i>|<\/i>|<b>|<\/b>|<img.*?>', '', content.strip())
-	stripped = re.sub(r'\t|    |  ', ' ', stripped)
-	stripped = re.sub(r'\n|    |  ', '<br>', stripped)
+	stripped = re.sub(r'#|_|<h[1-6]>|<\/h[1-6]>|<div.*?>|<\/div>|<a href=.*?<\/a>|\n>|\*|<i>|<\/i>|<b>|<\/b>|<img.*?>|<blockquote>|<\/blockquote>|<ul>|<\/ul>|<li>|</\li>|<p>|<\/p>', r'', content.decode('utf-8').strip())
+	stripped = re.sub(r'’|‘|“|”|"|„', r"'", stripped)
+	stripped = re.sub(r'\t|    |  ', r' ', stripped)
+	stripped = re.sub(r'\n|    |  ', r'<br>', stripped)
 	stripped = re.sub(r'\[(.*?)\]\(.*?\)', r'\1', stripped)
-	stripped = re.sub(r'"', r"'", stripped)
 	stripped = re.sub(r'<br>(<br>)+', r"<br>", stripped)
 	return '%s...' % stripped[0:250].strip()
 
@@ -962,7 +973,7 @@ def bake_page_list(lines, template_name, page_title, dest, cur_page, num_pages, 
 	# apply template
 	env = Environment(loader=FileSystemLoader('%s/templates' % inkconfig["syspath"]))
 	template = env.get_template('%s.html' % template_name)
-	bakedhtml = template.render(posts=posts, title=page_title, cur_page=cur_page, num_pages=num_pages, num_posts=num_posts, nav=nav, site_title=inkconfig["site_title"])
+	bakedhtml = template.render(posts=posts, title=page_title, desc=page_title, cur_page=cur_page, num_pages=num_pages, num_posts=num_posts, nav=nav, site_title=inkconfig["site_title"])
 
 	# save HTML file to proper location
 	dest_file = '%s/web/%s' % (inkconfig["syspath"], dest)
