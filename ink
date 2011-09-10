@@ -227,7 +227,7 @@ class Post:
 		self.content = frontmatter[1]
 
 		# parse metadata
-		self.title = metadata['title']
+		self.title = smartyPants(metadata['title'])
 		self.date = metadata['date']
 
 		if metadata.has_key('template'):
@@ -329,7 +329,7 @@ class Page:
 		self.content = frontmatter[1]
 
 		# parse metadata
-		self.title = metadata["title"]
+		self.title = smartyPants(metadata["title"])
 		if metadata.has_key("template"):
 			self.template = metadata["template"]
 		else:
