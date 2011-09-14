@@ -220,14 +220,17 @@ class Post:
 		return self.imagehtml[imagestr[0]]
 
 	# load post
-	def load(self, posttext):
+	def load(self, posttext, smarty=False):
 		# separate YAML metadata out
 		frontmatter = posttext.split('----')
 		metadata = yaml.load(frontmatter[0])
 		self.content = frontmatter[1]
 
 		# parse metadata
-		self.title = smartyPants(metadata['title'])
+		if smarty:
+			self.title = smartyPants(metadata['title'])
+		else:
+			self.title = metadata['title']
 		self.date = metadata['date']
 
 		if metadata.has_key('template'):
@@ -265,7 +268,7 @@ class Post:
 		posttext = input.read()
 		input.close()
 
-		self.load(posttext)
+		self.load(posttext, True)
 
 		# now load any comments
 		self.comments = load_comments("%s/posts/%04d/%02d/%04d-%02d-%02d-%s.comments" % (inkconfig["syspath"], self.year, self.month, self.year, self.month, self.day, self.basename))
@@ -339,6 +342,31 @@ class Page:
 		else:
 			self.thumbnail = ''
 
+		if metadata.has_key("breadcrumb"):
+			breadcrumbs = '%s/' % metadata["breadcrumb"]
+		else:
+			# target URL
+			base, ext = os.path.splitext(os.path.abspath(self.filename))
+			target = base[base.find("pages")+6:]
+			head, tail = os.path.split(target)
+
+			if tail == 'index':
+				tail = ''
+			else:
+				if head != '':
+					tail = '/' + tail
+
+			newbase = base[base.find("pages")+6:]
+			breadcrumbs = '%s%s' % (head, tail)
+
+		# parse the breadcrumbs
+		self.crumbs = []
+		if breadcrumbs:
+			self.crumbs.append({ 'url': '/', 'title': 'Home' })
+		
+			for crumb in breadcrumbs.split('/')[:-1]:
+				self.crumbs.append({ 'url': '/%s' % breadcrumbs[0:breadcrumbs.find(crumb)+len(crumb)], 'title': crumb })
+
 		# and the description field
 		self.desc = get_description(self.content)
 
@@ -348,7 +376,7 @@ class Page:
 		# apply template
 		env = Environment(loader=FileSystemLoader('%s/templates' % inkconfig["syspath"]))
 		template = env.get_template('%s.html' % self.template)
-		bakedhtml = template.render(title=self.title, date=self.date, desc=self.desc, content=self.content, thumbnail=self.thumbnail, metadata=metadata, site_title=inkconfig["site_title"])
+		bakedhtml = template.render(title=self.title, date=self.date, desc=self.desc, content=self.content, thumbnail=self.thumbnail, breadcrumbs=self.crumbs, metadata=metadata, site_title=inkconfig["site_title"])
 
 		# prep the directory
 		if self.relpath != '':
@@ -474,7 +502,7 @@ class Site:
 			posttext = input.read()
 			input.close()
 
-			post.load(posttext)
+			post.load(posttext, False)
 			post.url = "%s/blog/%04d/%02d/%s" % (inkconfig["site_url"], post.year, post.month, post.basename)
 
 			# replace relative URLs with absolute ones
@@ -925,7 +953,7 @@ def bake_page_list(lines, template_name, page_title, dest, cur_page, num_pages, 
 		posttext = input.read()
 		input.close()
 
-		post.load(posttext)
+		post.load(posttext, True)
 		post.url = "/blog/%04d/%02d/%s" % (post.year, post.month, post.basename)
 		posts.append(post)
 
