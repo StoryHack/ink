@@ -9,6 +9,7 @@ import yaml							# for post metadata
 import re							# for regexes
 import fnmatch						# for wildcards
 import PyRSS2Gen					# for generating RSS feed
+import time							# for modification time
 from markdown2 import markdown		# for conversion of Markdown to HTML
 from smartypants import smartyPants	# for better typography
 from datetime import datetime		# for adding current date to filename
@@ -276,10 +277,16 @@ class Post:
 		# prepare post slug (for comments system)
 		post_slug = "%04d-%02d-%02d-%s" % (self.year, self.month, self.day, self.basename)
 
+		# parse the breadcrumbs
+		self.crumbs = []
+		self.crumbs.append({ 'url': '/', 'title': 'Home' })
+		self.crumbs.append({ 'url': '/archives', 'title': '%04d' % self.year })
+		self.crumbs.append({ 'url': '/blog/%04d/%02d' % (self.year, self.month), 'title': '%02d' % self.month })
+		
 		# apply template
 		env = Environment(loader=FileSystemLoader('%s/templates' % inkconfig["syspath"]))
 		template = env.get_template('%s.html' % self.template)
-		bakedhtml = template.render(title=self.title, date=self.date, desc=self.desc, categories=self.categoryhtml, comments=self.comments, content=self.content, post_slug=post_slug, site_title=inkconfig["site_title"])
+		bakedhtml = template.render(title=self.title, date=self.date, desc=self.desc, categories=self.categoryhtml, comments=self.comments, content=self.content, post_slug=post_slug, breadcrumbs=self.crumbs, site_title=inkconfig["site_title"])
 
 		# save HTML file to proper location
 		output = open(dest_file, 'w')
@@ -498,12 +505,19 @@ class Site:
 			post = Post(filename)
 
 			# read file in
-			input = open("%s/posts/%04d/%02d/%s" % (inkconfig["syspath"], post.year, post.month, filename), 'r')
+			filepath = "%s/posts/%04d/%02d/%s" % (inkconfig["syspath"], post.year, post.month, filename)
+			input = open(filepath, 'r')
 			posttext = input.read()
 			input.close()
 
+
 			post.load(posttext, False)
 			post.url = "%s/blog/%04d/%02d/%s" % (inkconfig["site_url"], post.year, post.month, post.basename)
+
+			# get the mod time
+			createtime = datetime.fromtimestamp(os.path.getmtime(filepath))
+			posttime = time.strptime(post.date, '%b %d, %Y')
+			postdatetime = datetime(posttime.tm_year, posttime.tm_mon, posttime.tm_mday, createtime.hour, createtime.minute, createtime.second)
 
 			# replace relative URLs with absolute ones
 			post.content = re.sub(r'''href=(['"])/''', r'href=\1%s/' % inkconfig["site_url"], post.content)
@@ -515,7 +529,7 @@ class Site:
 					link = post.url,
 					description = post.content,
 					guid = PyRSS2Gen.Guid(post.url),
-					pubDate = post.date)
+					pubDate = postdatetime)
 			posts.append(item)
 
 		rss = PyRSS2Gen.RSS2(
@@ -700,10 +714,13 @@ class Site:
 
 			categories.append({ 'name': name, 'url': '/blog/category/%s' % slug, 'count': len(lines) })
 
+		# breadcrumbs
+		self.crumbs = [{ 'url': '/', 'title': 'Home' }]
+
 		# apply template
 		env = Environment(loader=FileSystemLoader('%s/templates' % inkconfig["syspath"]))
 		template = env.get_template('archives.html')
-		bakedhtml = template.render(archives=archives, categories=categories, title='Archives', desc='Site archives', site_title=inkconfig["site_title"])
+		bakedhtml = template.render(archives=archives, categories=categories, title='Archives', desc='Site archives', breadcrumbs=self.crumbs, site_title=inkconfig["site_title"])
 
 		# save HTML file to proper location
 		dest_file = '%s/web/archives/index.html' % inkconfig["syspath"]
@@ -998,10 +1015,38 @@ def bake_page_list(lines, template_name, page_title, dest, cur_page, num_pages, 
 	else:
 		nav = ''
 
+	# parse the breadcrumbs
+	crumbs = []
+
+	if template_name != 'index':
+		crumbs.append({ 'url': '/', 'title': 'Home' })
+		crumbs.append({ 'url': '/archives', 'title': 'Archives' })
+
+		# target URL
+		head, tail = os.path.split(dest[dest.find('blog')+5:])
+
+		# drop the last part .html
+			# category/lds
+			# 2005/03
+		# parse the breadcrumbs
+		if head:
+			if head[0:8] == 'category':
+				for crumb in head.split('/')[1:]:
+					crumbs.append({ 'url': '/blog/%s' % head[0:head.find(crumb)+len(crumb)], 'title': crumb })
+			else:
+				# monthly archive
+				for crumb in head.split('/'):
+					url = head[0:head.find(crumb)+len(crumb)]
+					if len(url) == 4:
+						url = '/archives'
+					else:
+						url = '/blog/%s' % url
+					crumbs.append({ 'url': url, 'title': crumb })
+
 	# apply template
 	env = Environment(loader=FileSystemLoader('%s/templates' % inkconfig["syspath"]))
 	template = env.get_template('%s.html' % template_name)
-	bakedhtml = template.render(posts=posts, title=page_title, desc=page_title, cur_page=cur_page, num_pages=num_pages, num_posts=num_posts, nav=nav, site_title=inkconfig["site_title"])
+	bakedhtml = template.render(posts=posts, title=page_title, desc=page_title, cur_page=cur_page, num_pages=num_pages, num_posts=num_posts, nav=nav, breadcrumbs=crumbs, crumbtitle='Page %s' % cur_page, site_title=inkconfig["site_title"])
 
 	# save HTML file to proper location
 	dest_file = '%s/web/%s' % (inkconfig["syspath"], dest)
