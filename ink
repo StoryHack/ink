@@ -494,56 +494,8 @@ class Site:
 		print "Baked index."
 
 	def bake_rss(self):
-		input = open('%s/posts/index.list' % inkconfig["syspath"], 'r')
-		lines = input.readlines()
-		input.close()
-
-		# get posts
-		posts = []
-		for filename in lines:
-			filename = filename.strip()
-			post = Post(filename)
-
-			# read file in
-			filepath = "%s/posts/%04d/%02d/%s" % (inkconfig["syspath"], post.year, post.month, filename)
-			input = open(filepath, 'r')
-			posttext = input.read()
-			input.close()
-
-
-			post.load(posttext, False)
-			post.url = "%s/blog/%04d/%02d/%s" % (inkconfig["site_url"], post.year, post.month, post.basename)
-
-			# get the mod time
-			createtime = datetime.fromtimestamp(os.path.getmtime(filepath))
-			posttime = time.strptime(post.date, '%b %d, %Y')
-			postdatetime = datetime(posttime.tm_year, posttime.tm_mon, posttime.tm_mday, createtime.hour, createtime.minute, createtime.second)
-
-			# replace relative URLs with absolute ones
-			post.content = re.sub(r'''href=(['"])/''', r'href=\1%s/' % inkconfig["site_url"], post.content)
-			post.content = re.sub(r'''src=(['"])/''', r'src=\1%s/' % inkconfig["site_url"], post.content)
-
-			# generate the RSS
-			item = PyRSS2Gen.RSSItem(
-					title = post.title,
-					link = post.url,
-					description = post.content,
-					guid = PyRSS2Gen.Guid(post.url),
-					pubDate = postdatetime)
-			posts.append(item)
-
-		rss = PyRSS2Gen.RSS2(
-				title = inkconfig["site_title"],
-				link = inkconfig["site_url"],
-				description = inkconfig["site_desc"],
-				lastBuildDate = datetime.now(),
-				items = posts)
-
-		# save RSS file to proper location
-		dest_file = '%s/web/feed.xml' % inkconfig["syspath"]
-		output = open(dest_file, 'w')
-		output.write(rss.to_xml())
-
+		# bake RSS for main site
+		bake_rss_feed('%s/posts/index.list' % inkconfig["syspath"], '%s/web/feed.xml' % inkconfig["syspath"], inkconfig["site_title"], inkconfig["site_desc"], False, False)
 		print "Baked RSS."
 
 	def bake_posts(self):
@@ -616,6 +568,10 @@ class Site:
 			bake_page_list(page, 'category', 'Archive: %s%s' % (title, pagetitle), '%s/%s' % (dest_dir, filename), counter, num_pages, num_posts, True)
 
 			counter += 1
+
+		# and now bake the RSS feed for it
+		bake_rss_feed('%s/posts/category/%s' % (inkconfig["syspath"], catfile), '%s/web/%s/feed.rss' % (inkconfig["syspath"], dest_dir), '%s: %s' % (inkconfig["site_title"], title), 'Category feed')
+
 
 	def bake_monthly_archive(self, year, month):
 		# read file in
@@ -1015,8 +971,9 @@ def bake_page_list(lines, template_name, page_title, dest, cur_page, num_pages, 
 	else:
 		nav = ''
 
-	# parse the breadcrumbs
+	# parse the breadcrumbs and set up the RSS feed for categories
 	crumbs = []
+	rss = ''
 
 	if template_name != 'index':
 		crumbs.append({ 'url': '/', 'title': 'Home' })
@@ -1033,6 +990,8 @@ def bake_page_list(lines, template_name, page_title, dest, cur_page, num_pages, 
 			if head[0:8] == 'category':
 				for crumb in head.split('/')[1:]:
 					crumbs.append({ 'url': '/blog/%s' % head[0:head.find(crumb)+len(crumb)], 'title': crumb })
+				# the category slug is whatever's left after 'category/' in head
+				rss = '/blog/category/%s/feed.rss' % head[9:]
 			else:
 				# monthly archive
 				for crumb in head.split('/'):
@@ -1046,12 +1005,71 @@ def bake_page_list(lines, template_name, page_title, dest, cur_page, num_pages, 
 	# apply template
 	env = Environment(loader=FileSystemLoader('%s/templates' % inkconfig["syspath"]))
 	template = env.get_template('%s.html' % template_name)
-	bakedhtml = template.render(posts=posts, title=page_title, desc=page_title, cur_page=cur_page, num_pages=num_pages, num_posts=num_posts, nav=nav, breadcrumbs=crumbs, crumbtitle='Page %s' % cur_page, site_title=inkconfig["site_title"])
+	bakedhtml = template.render(posts=posts, title=page_title, desc=page_title, cur_page=cur_page, num_pages=num_pages, num_posts=num_posts, nav=nav, breadcrumbs=crumbs, crumbtitle='Page %s' % cur_page, site_title=inkconfig["site_title"], rss=rss)
 
 	# save HTML file to proper location
 	dest_file = '%s/web/%s' % (inkconfig["syspath"], dest)
 	output = open(dest_file, 'w')
 	output.write(bakedhtml.encode('utf-8'))
+
+
+def bake_rss_feed(inputfile, outputfile, title, desc, ignore=True, reverse=True):
+	input = open(inputfile, 'r')
+	lines = input.readlines()
+	input.close()
+
+	# ignore first two lines and only get up to the last ten
+	if ignore:
+		lines = lines[2:]
+		lines = lines[-10:]
+	
+	# reverse list
+	if reverse:
+		lines.reverse()
+
+	# get posts
+	posts = []
+	for filename in lines:
+		filename = filename.strip()
+		post = Post(filename)
+
+		# read file in
+		filepath = "%s/posts/%04d/%02d/%s" % (inkconfig["syspath"], post.year, post.month, filename)
+		input = open(filepath, 'r')
+		posttext = input.read()
+		input.close()
+
+		post.load(posttext, False)
+		post.url = "%s/blog/%04d/%02d/%s" % (inkconfig["site_url"], post.year, post.month, post.basename)
+
+		# get the mod time
+		createtime = datetime.fromtimestamp(os.path.getmtime(filepath))
+		posttime = time.strptime(post.date, '%b %d, %Y')
+		postdatetime = datetime(posttime.tm_year, posttime.tm_mon, posttime.tm_mday, createtime.hour, createtime.minute, createtime.second)
+
+		# replace relative URLs with absolute ones
+		post.content = re.sub(r'''href=(['"])/''', r'href=\1%s/' % inkconfig["site_url"], post.content)
+		post.content = re.sub(r'''src=(['"])/''', r'src=\1%s/' % inkconfig["site_url"], post.content)
+
+		# generate the RSS
+		item = PyRSS2Gen.RSSItem(
+				title = post.title,
+				link = post.url,
+				description = post.content,
+				guid = PyRSS2Gen.Guid(post.url),
+				pubDate = postdatetime)
+		posts.append(item)
+
+	rss = PyRSS2Gen.RSS2(
+			title = title,
+			link = inkconfig["site_url"],
+			description = desc,
+			lastBuildDate = datetime.now(),
+			items = posts)
+
+	# save RSS file to proper location
+	output = open(outputfile, 'w')
+	output.write(rss.to_xml(encoding='utf-8'))
 
 
 # MAIN STUFF
