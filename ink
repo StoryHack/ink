@@ -113,7 +113,7 @@ class Post:
 			# add CSS
 			css = ' '.join(img.classes)
 			if css != '':
-				css = 'class="%s" ' % css
+				css = ' class="%s"' % css
 
 			# and the alt text
 			alt = img.alt.strip()
@@ -131,9 +131,9 @@ class Post:
 				img.url = "%s/%s" % (imagepath, result)
 
 			if img.target_url != '':				# linked image
-				self.imagehtml[img.filename] = '<a href="%s"%s><img src="%s" alt="%s" %s/></a>' % (img.target_url, shadowbox, img.url, alt, css)
+				self.imagehtml[img.filename] = '<figure%s><a href="%s"%s><img src="%s" alt="%s" /></a></figure>' % (css, img.target_url, shadowbox, img.url, alt)
 			else:									# unlinked image
-				self.imagehtml[img.filename] = '<img src="%s" alt="%s" %s/>' % (img.url, alt, css)
+				self.imagehtml[img.filename] = '<figure%s><img src="%s" alt="%s" %s/></figure>' % (css, img.url, alt)
 
 		# now go through again and replace the image tags
 		new_content = []
@@ -940,7 +940,7 @@ def bake_page_list(lines, template_name, page_title, dest, cur_page, num_pages, 
 				link = '.'
 			else:
 				link = './page%s' % (cur_page - 1)
-			nav.append('<a rel="previous" href="%s">&laquo; Prev</a>' % link)
+			nav.append('<a rel="previous" href="%s">&laquo;&nbsp;Prev</a>' % link)
 
 		# figure out our range
 		x = cur_page - page_padding
@@ -965,7 +965,7 @@ def bake_page_list(lines, template_name, page_title, dest, cur_page, num_pages, 
 				nav.append('<a class="nav" href="%s">%s</a>' % (link, i))
 		
 		if cur_page + page_padding < num_pages and num_pages > page_window:
-			nav.append('<a rel="next" href="./page%s">Next &raquo;</a>' % (cur_page + 1))
+			nav.append('<a rel="next" href="./page%s">Next&nbsp;&raquo;</a>' % (cur_page + 1))
 
 		nav = '\n'.join(nav)
 	else:
