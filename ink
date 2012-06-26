@@ -118,7 +118,7 @@ class Post:
 			# and the alt text
 			alt = img.alt.strip()
 
-			# split it out 
+			# split it out
 			result = process_image(img.filename, datestamp, img.target_width)
 
 			shadowbox = ''
@@ -133,7 +133,7 @@ class Post:
 			if img.target_url != '':				# linked image
 				self.imagehtml[img.filename] = '<figure%s><a href="%s"%s><img src="%s" alt="%s" /></a></figure>' % (css, img.target_url, shadowbox, img.url, alt)
 			else:									# unlinked image
-				self.imagehtml[img.filename] = '<figure%s><img src="%s" alt="%s" %s/></figure>' % (css, img.url, alt)
+				self.imagehtml[img.filename] = '<figure%s><img src="%s" alt="%s" /></figure>' % (css, img.url, alt)
 
 		# now go through again and replace the image tags
 		new_content = []
@@ -171,7 +171,7 @@ class Post:
 
 		# bake index, RSS, archives page, sitemap
 		site = Site()
-		site.update()			
+		site.update()
 
 	# update category and monthly archive and, if necessary, the index
 	def update(self, add):
@@ -250,7 +250,7 @@ class Post:
 			url = '/blog/category/%s' % get_category_slug(category)
 			categories.append("<a href='%s'>%s</a>" % (url, category))
 		self.categoryhtml = ", ".join(categories)
-	
+
 		# and the description field
 		self.desc = get_description(self.content)
 
@@ -282,7 +282,7 @@ class Post:
 		self.crumbs.append({ 'url': '/', 'title': 'Home' })
 		self.crumbs.append({ 'url': '/archives', 'title': '%04d' % self.year })
 		self.crumbs.append({ 'url': '/blog/%04d/%02d' % (self.year, self.month), 'title': '%02d' % self.month })
-		
+
 		# apply template
 		env = Environment(loader=FileSystemLoader('%s/templates' % inkconfig["syspath"]))
 		template = env.get_template('%s.html' % self.template)
@@ -370,7 +370,7 @@ class Page:
 		self.crumbs = []
 		if breadcrumbs:
 			self.crumbs.append({ 'url': '/', 'title': 'Home' })
-		
+
 			for crumb in breadcrumbs.split('/')[:-1]:
 				self.crumbs.append({ 'url': '/%s' % breadcrumbs[0:breadcrumbs.find(crumb)+len(crumb)], 'title': crumb })
 
@@ -739,7 +739,7 @@ class Site:
 		output.close()
 
 		print 'Baked sitemap.'
-	
+
 
 
 class InkImage:
@@ -773,7 +773,7 @@ def load_comments(filename):
 			c = Comment()
 			c.parse(comment)
 			c_array.append(c)
-		
+
 		return c_array
 	return []
 
@@ -839,7 +839,7 @@ def process_image(filename, datestamp, targetwidth=None):
 	if w > targetwidth:
 		targetheight = targetwidth * (float(h) / float(w))
 		img.thumbnail((targetwidth, targetheight), Image.ANTIALIAS)
- 
+
 		(slug, extension) = os.path.splitext(filename)
 		new_filename = '%s-%s%s' % (slug, targetwidth, extension)
 		img.save('%s/%s' % (dest_dir, new_filename), quality=100)
@@ -953,7 +953,7 @@ def bake_page_list(lines, template_name, page_title, dest, cur_page, num_pages, 
 			if x < 1:
 				x = 1
 			y = num_pages
-		
+
 		for i in range(x, y + 1):
 			if i == cur_page:
 				nav.append('<span class="nav">%s</span>' % i)
@@ -963,7 +963,7 @@ def bake_page_list(lines, template_name, page_title, dest, cur_page, num_pages, 
 				else:
 					link = './page%s' % i
 				nav.append('<a class="nav" href="%s">%s</a>' % (link, i))
-		
+
 		if cur_page + page_padding < num_pages and num_pages > page_window:
 			nav.append('<a rel="next" href="./page%s">Next&nbsp;&raquo;</a>' % (cur_page + 1))
 
@@ -1022,7 +1022,7 @@ def bake_rss_feed(inputfile, outputfile, title, desc, ignore=True, reverse=True)
 	if ignore:
 		lines = lines[2:]
 		lines = lines[-10:]
-	
+
 	# reverse list
 	if reverse:
 		lines.reverse()
@@ -1080,7 +1080,7 @@ def process_args(action, target):
 		post.publish(target)
 	elif action == "edit":					# open external editor
 		filename = get_filename(target)
-		call([inkconfig["editor"], filename])	
+		call([inkconfig["editor"], filename])
 		exit(-1)
 	elif action == "deploy":				# deploy via rsync
 		call(["rsync", "-av", "--delete", "-e ssh", "%s/" % inkconfig["syspath"], "%s" % inkconfig["site_target"]])
