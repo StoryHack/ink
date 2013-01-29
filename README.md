@@ -2,8 +2,6 @@
 
 Ink is a static blog engine and CMS written in Python, using Markdown/YAML for pages and posts and jinja2 for templates. Everything's run on the command line. You bake everything locally and then deploy to production (using rsync on the backend).
 
-The code is in the public domain.
-
 
 ## Dependencies
 
