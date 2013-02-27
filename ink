@@ -265,7 +265,7 @@ class Post:
 		dest_file = "%s/%s.html" % (dest_dir, self.basename)
 
 		# read file in
-		input = open("%s/posts/%04d/%02d/%04d-%02d-%02d-%s.text" % (inkconfig["syspath"], self.year, self.month, self.year, self.month, self.day, self.basename), 'r')
+		input = open(r"%s%sposts%s%04d%s%02d%s%04d-%02d-%02d-%s.text" % (inkconfig["syspath"],os.sep,os.sep, self.year,os.sep, self.month, os.sep,self.year, self.month, self.day, self.basename), 'r')
 		posttext = input.read()
 		input.close()
 
