@@ -143,7 +143,7 @@ class Post:
 		self.content = new_content
 
 		# and save it to the new location
-		output = open("%s/%s" % (new_dir, new_filename), 'w')
+		output = open("%s%s%s" % (new_dir, os.sep, new_filename), 'w')
 		output.write(metadata)
 		output.write('----\n')
 		for line in self.content:
@@ -154,7 +154,7 @@ class Post:
 		self.bake(True)
 
 		# update index.list
-		index_list = "%s/posts/index.list" % inkconfig["syspath"]
+		index_list = "%s%sposts%sindex.list" % (inkconfig["syspath"], os.sep, os.sep)
 		input = open(index_list, 'r')
 		lines = input.readlines()
 		input.close()
@@ -196,7 +196,7 @@ class Post:
 
 		# if we're rebaking, check index and if post is there, rebake index
 		if not add:
-			input = open('%s/posts/index.list' % inkconfig["syspath"], 'r')
+			input = open('%s%sposts%sindex.list' % (inkconfig["syspath"], os.sep, os.sep), 'r')
 			lines = input.readlines()
 			input.close()
 
@@ -262,7 +262,7 @@ class Post:
 	def bake(self, echo=False):
 		dest_dir = "%s/web/blog/%04d/%02d" % (inkconfig["syspath"], self.year, self.month)
 		mkdir_p(dest_dir)
-		dest_file = "%s/%s.html" % (dest_dir, self.basename)
+		dest_file = "%s%s%s.html" % (dest_dir, os.sep, self.basename)
 
 		# read file in
 		input = open(r"%s%sposts%s%04d%s%02d%s%04d-%02d-%02d-%s.text" % (inkconfig["syspath"],os.sep,os.sep, self.year,os.sep, self.month, os.sep,self.year, self.month, self.day, self.basename), 'r')
@@ -394,7 +394,7 @@ class Page:
 		mkdir_p(dest_dir)
 
 		# save the HTML file
-		dest_file = '%s/%s.html' % (dest_dir, os.path.splitext(self.basename)[0])
+		dest_file = '%s%s%s.html' % (dest_dir, os.sep, os.path.splitext(self.basename)[0])
 		output = open(dest_file, 'w')
 		output.write(bakedhtml.encode('utf-8'))
 
@@ -486,7 +486,7 @@ class Site:
 		self.bake_sitemap()
 
 	def bake_index(self):
-		input = open('%s/posts/index.list' % inkconfig["syspath"], 'r')
+		input = open('%s%sposts%sindex.list' % (inkconfig["syspath"], os.sep,os.sep), 'r')
 		lines = input.readlines()
 		input.close()
 
@@ -524,7 +524,7 @@ class Site:
 
 	def bake_category(self, catfile):
 		# read file in
-		input = open("%s/posts/category/%s" % (inkconfig["syspath"], catfile), 'r')
+		input = open("%s%sposts%scategory%s%s" % (inkconfig["syspath"],os.sep,os.sep,os.sep, catfile), 'r')
 		cattext = input.read()
 		input.close()
 
@@ -575,7 +575,7 @@ class Site:
 
 	def bake_monthly_archive(self, year, month):
 		# read file in
-		input = open("%s/posts/%s/%s/index.list" % (inkconfig["syspath"], year, month), 'r')
+		input = open("%s%sposts%s%s%s%s%sindex.list" % (inkconfig["syspath"],os.sep,os.sep, year, os.sep, month,os.sep), 'r')
 		lines = input.readlines()
 		input.close()
 
@@ -639,7 +639,7 @@ class Site:
 				months = os.listdir('%s/posts/%s' % (inkconfig["syspath"], year))
 				for month in months:
 					if month.isdigit():
-						input = open('%s/posts/%s/%s/index.list' % (inkconfig["syspath"], year, month), 'r')
+						input = open('%s%sposts%s%s%s%s%sindex.list' % (inkconfig["syspath"],os.sep,os.sep, year,os.sep, month,os.sep), 'r')
 						lines = input.readlines()
 						input.close()
 
@@ -652,7 +652,7 @@ class Site:
 		# Go through each category/*.list, get title, count len(lines), output
 		catfiles = os.listdir('%s/posts/category' % inkconfig["syspath"])
 		for cat in catfiles:
-			input = open('%s/posts/category/%s' % (inkconfig["syspath"], cat), 'r')
+			input = open('%s%sposts%scategory%s%s' % (inkconfig["syspath"], os.sep, os.sep, os.sep, cat), 'r')
 			cattext = input.read()
 			input.close()
 
@@ -679,7 +679,7 @@ class Site:
 		bakedhtml = template.render(archives=archives, categories=categories, title='Archives', desc='Site archives', breadcrumbs=self.crumbs, site_title=inkconfig["site_title"])
 
 		# save HTML file to proper location
-		dest_file = '%s/web/archives/index.html' % inkconfig["syspath"]
+		dest_file = '%s%sweb%sarchives%sindex.html' % (inkconfig["syspath"], os.sep, os.sep, os.sep)
 		output = open(dest_file, 'w')
 		output.write(bakedhtml.encode('utf-8'))
 
@@ -687,7 +687,7 @@ class Site:
 
 	def add_to_category(self, category, filename):
 		slug = get_category_slug(category)
-		catfile = '%s/posts/category/%s.list' % (inkconfig["syspath"], slug)
+		catfile = '%s%sposts%scategory%s%s.list' % (inkconfig["syspath"],os.sep,os.sep,os.sep, slug)
 
 		if not os.path.exists('%s/posts/category' % inkconfig["syspath"]):
 			mkdir_p('%s/posts/category' % inkconfig["syspath"])
@@ -703,7 +703,7 @@ class Site:
 	def add_to_monthly_archive(self, filename):
 		year, month = get_date_from_filename(filename)
 
-		archive = '%s/posts/%04d/%02d/index.list' % (inkconfig["syspath"], year, month)
+		archive = '%s%sposts%s%04d%s%02d%sindex.list' % (inkconfig["syspath"], os.sep, os.sep, year,os.sep, month, os.sep)
 
 		if os.path.exists(archive):
 			output = open(archive, 'a')
@@ -715,11 +715,11 @@ class Site:
 		return (year, month)
 
 	def bake_sitemap(self):
-		input = open('%s/pages/sitemap.list' % inkconfig["syspath"], 'r')
+		input = open('%s%spages%ssitemap.list' % (inkconfig["syspath"], os.sep, os.sep), 'r')
 		lines = input.readlines()
 		input.close()
 
-		output = open('%s/web/sitemap.xml' % inkconfig["syspath"], 'w')
+		output = open('%s%sweb%ssitemap.xml' % (inkconfig["syspath"], os.sep, os.sep), 'w')
 
 		output.write('''<?xml version="1.0" encoding="UTF-8"?>\n''')
 		output.write('''<!-- generator="ink" -->\n''')
@@ -861,13 +861,13 @@ def add_to_sitemap(url, itemtype):
 		frequency = 'weekly'
 		priority = '0.6'
 
-	output = open('%s/pages/sitemap.list' % inkconfig["syspath"], 'a')
+	output = open('%s%spages%ssitemap.list' % (inkconfig["syspath"], os.sep, os.sep), 'a')
 	output.write('%s/ | %s | %s | %s\n' % (url, get_iso8601_date(), frequency, priority))
 	output.close()
 
 def update_sitemap(url):
 	# read in the file
-	input = open('%s/pages/sitemap.list' % inkconfig["syspath"], 'r')
+	input = open('%s%spages%ssitemap.list' % (inkconfig["syspath"], os.sep, os.sep), 'r')
 	lines = input.read()
 	input.close()
 
@@ -878,7 +878,7 @@ def update_sitemap(url):
 		lines = re.sub(r'%s/ \| [^|]*' % url, r'%s/ | %s ' % (url, get_iso8601_date()), lines)
 
 		# save the file
-		output = open('%s/pages/sitemap.list' % inkconfig["syspath"], 'w')
+		output = open('%s%spages%ssitemap.list' % (inkconfig["syspath"], os.sep, os.sep), 'w')
 		output.write(lines)
 		output.close()
 	else:
@@ -922,7 +922,7 @@ def bake_page_list(lines, template_name, page_title, dest, cur_page, num_pages, 
 		post = Post(filename)
 
 		# read file in
-		input = open("%s/posts/%04d/%02d/%s" % (inkconfig["syspath"], int(post.year), int(post.month), filename), 'r')
+		input = open("%s%sposts%s%04d%s%02d%s%s" % (inkconfig["syspath"], os.sep, os.sep, int(post.year), os.sep, int(post.month),os.sep, filename), 'r')
 		posttext = input.read()
 		input.close()
 
@@ -1034,7 +1034,7 @@ def bake_rss_feed(inputfile, outputfile, title, desc, ignore=True, reverse=True)
 		post = Post(filename)
 
 		# read file in
-		filepath = "%s/posts/%04d/%02d/%s" % (inkconfig["syspath"], post.year, post.month, filename)
+		filepath = "%s%sposts%s%04d%s%02d%s%s" % (inkconfig["syspath"], os.sep, os.sep, post.year, os.sep, post.month, os.sep, filename)
 		input = open(filepath, 'r')
 		posttext = input.read()
 		input.close()
